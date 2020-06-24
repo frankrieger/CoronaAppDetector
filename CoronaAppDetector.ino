@@ -1,3 +1,6 @@
+// Simple rough fork of the CoronaAppDetector adapted for M5StickC
+
+
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEScan.h>
@@ -5,134 +8,18 @@
 #include <BLEAddress.h>
 #include <Ticker.h>
 #include <unordered_set>
+#include <M5StickC.h>
 
-#define SEGMENT_A 25
-#define SEGMENT_B 26
-#define SEGMENT_C 32
-#define SEGMENT_D 33
-#define SEGMENT_E 12
-#define SEGMENT_F 13
-#define SEGMENT_G 27
- 
 
 #define SLOTS 3
-#define TICK_INTERVAL 60
+#define TICK_INTERVAL 10
 
 String Address = "00:AA:FF:13:37:42";
  
 Ticker Tic;
 static BLEAddress *pServerAddress;
 BLEScan* pBLEScan ;
-int scanTime = 30; 
-
-
-
-
- void printNumber(int number)
- {
-  /*pls dont juge me*/   
-  if(number == 0){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 1);
-    digitalWrite(SEGMENT_F, 1);
-    digitalWrite(SEGMENT_G, 0);
-  }
-    if(number == 1){
-    digitalWrite(SEGMENT_A, 0);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 0);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 0);
-    digitalWrite(SEGMENT_G, 0);
-  }
-    if(number == 2){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 0);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 1);
-    digitalWrite(SEGMENT_F, 0);
-    digitalWrite(SEGMENT_G, 1);
-  }
-    if(number == 3){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 0);
-    digitalWrite(SEGMENT_G, 1);
-  }
-    if(number == 4){
-    digitalWrite(SEGMENT_A, 0);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 0);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 1);
-    digitalWrite(SEGMENT_G, 1);
-  }
-    if(number == 5){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 0);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 1);
-    digitalWrite(SEGMENT_G, 1);
-  }
-    if(number == 6){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 0);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 1);
-    digitalWrite(SEGMENT_F, 1);
-    digitalWrite(SEGMENT_G, 1);
-  }
-    if(number == 7){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 0);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 0);
-    digitalWrite(SEGMENT_G, 0);
-  }
-    if(number == 8){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 1);
-    digitalWrite(SEGMENT_F, 1);
-    digitalWrite(SEGMENT_G, 1);
-  }   
-  if(number == 9){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 1);
-    digitalWrite(SEGMENT_C, 1);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 1);
-    digitalWrite(SEGMENT_G, 1);
-  }
-    if(number > 9){
-    digitalWrite(SEGMENT_A, 1);
-    digitalWrite(SEGMENT_B, 0);
-    digitalWrite(SEGMENT_C, 0);
-    digitalWrite(SEGMENT_D, 1);
-    digitalWrite(SEGMENT_E, 0);
-    digitalWrite(SEGMENT_F, 0);
-    digitalWrite(SEGMENT_G, 1);
-  }
-  
-  
- }
+int scanTime = 10; 
 
 
 int slot = 0;
@@ -168,11 +55,19 @@ void sTick()  // Wird jede Sekunde ausgefüert
   
   //tell serial the number of devices
   if (near != old){
+    Serial.println("Number of devices:");
     Serial.println(near);
     old = near;
   }
-  //print to 7segment display. 
-  printNumber(near);
+  // print to 7segment display. 
+  // printNumber(near);
+   M5.Lcd.fillScreen(BLACK);
+  delay(500);
+
+  M5.Lcd.setCursor(0, 10);
+  M5.Lcd.setTextColor(WHITE);
+  M5.Lcd.setTextSize(5);
+  M5.Lcd.print(near);
 }
  
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
@@ -200,6 +95,17 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
  
 void setup() 
 {
+  M5.begin();
+ M5.Lcd.fillScreen(BLUE);
+  delay(500);
+  M5.Lcd.fillScreen(BLACK);
+  delay(500);
+
+  M5.Lcd.setCursor(0, 10);
+  M5.Lcd.setTextColor(WHITE);
+  M5.Lcd.setTextSize(2);
+  M5.Lcd.printf("Covid App Counter");
+  
   //we have 10 slots, each stores the macs seen in a second. so we record the seen macs from the last 10 secods
   for (int i = 0; i < SLOTS; i++)
   {
@@ -212,13 +118,7 @@ void setup()
   BLEDevice::init("");
   pBLEScan = BLEDevice::getScan();
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
-  pinMode(SEGMENT_A, OUTPUT);
-  pinMode(SEGMENT_B, OUTPUT);
-  pinMode(SEGMENT_C, OUTPUT);
-  pinMode(SEGMENT_D, OUTPUT);
-  pinMode(SEGMENT_E, OUTPUT);
-  pinMode(SEGMENT_F, OUTPUT);
-  pinMode(SEGMENT_G, OUTPUT);
+ 
 
   //every TICK_INTERVAL second we want to do some stuff
   Tic.attach( TICK_INTERVAL,sTick);
