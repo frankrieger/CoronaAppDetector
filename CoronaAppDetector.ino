@@ -1,7 +1,5 @@
 // Simple rough fork of the CoronaAppDetector adapted for M5StickC
 // original initial source from https://github.com/kauzu/CoronaAppDetector
-
-
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEScan.h>
@@ -64,10 +62,10 @@ void sTick()  // Wird jede Sekunde ausgefüert
   // printNumber(near);
    M5.Lcd.fillScreen(BLACK);
   delay(500);
-
-  M5.Lcd.setCursor(0, 10);
+  M5.Lcd.setRotation(1);
+  M5.Lcd.setCursor(1, 10);
   M5.Lcd.setTextColor(WHITE);
-  M5.Lcd.setTextSize(5);
+  M5.Lcd.setTextSize(6);
   M5.Lcd.print(near);
 }
  
@@ -101,7 +99,7 @@ void setup()
   delay(500);
   M5.Lcd.fillScreen(BLACK);
   delay(500);
-
+M5.Lcd.setRotation(1);
   M5.Lcd.setCursor(0, 10);
   M5.Lcd.setTextColor(WHITE);
   M5.Lcd.setTextSize(2);
