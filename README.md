@@ -1,6 +1,3 @@
-# CoronaAppDetector
+# CoronaAppDetector for M5StickC
 
-Some code and sample hardware setup to show how many corona apps are in proximity.
-Uses esp32 and some 7 segment display
-
-![My Hardware](/hardware.jpg)
+Simple counter that shows how many people around you have the Covid 19 Exposure Notification running on their phones.
