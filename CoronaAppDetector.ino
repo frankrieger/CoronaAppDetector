@@ -1,5 +1,5 @@
 // Simple rough fork of the CoronaAppDetector adapted for M5StickC
-// origonal initial source from https://github.com/kauzu/CoronaAppDetector
+// original initial source from https://github.com/kauzu/CoronaAppDetector
 
 
 #include <BLEDevice.h>
