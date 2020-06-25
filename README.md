@@ -7,6 +7,7 @@ Simple PoC for counter that shows how many people around you have the Covid 19 E
 Todo: 
 - battery and scan cycle optimization (current run time on internal battery is about 35 minutes) 
 - battery display 
-- switching between "continuous scand" and "push button to wake up and scan"-mode.
+- "continuous scan" and "push button to wake up and scan"-mode (switchable)
+- some sort of statistical logging / counters
 
 
