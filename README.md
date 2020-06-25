@@ -5,7 +5,7 @@ Simple PoC for counter that shows how many people around you have the Covid 19 E
 ![Counter working](https://github.com/frankrieger/CoronaAppDetectorM5StickC/blob/master/Working.png)
 
 Todo: 
-- battery and scan cycle optimization (current run time on internal battery is about 35 minutes) 
+- scan cycle optimization
 - battery display 
 - "continuous scan" and "push button to wake up and scan"-mode (switchable)
 - some sort of statistical logging / counters
