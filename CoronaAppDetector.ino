@@ -18,7 +18,7 @@ String Address = "00:AA:FF:13:37:42";
 Ticker Tic;
 static BLEAddress *pServerAddress;
 BLEScan* pBLEScan ;
-int scanTime = 10; 
+int scanTime = 10;    
 
 
 int slot = 0;
@@ -48,6 +48,9 @@ void sTick()  // Wird jede Sekunde ausgefüert
     if (seen[i]->size() > 0)
       fullSlots++;
   }
+
+
+  
   int near = 0;
   if (fullSlots > 0)
     near = sum / fullSlots;
@@ -57,16 +60,24 @@ void sTick()  // Wird jede Sekunde ausgefüert
     Serial.println("Number of devices:");
     Serial.println(near);
     old = near;
-  }
-  // print to 7segment display. 
-  // printNumber(near);
-   M5.Lcd.fillScreen(BLACK);
-  delay(500);
+   // }
+
+  
+
+
+  
+  M5.Axp.SetLDO2(true);  // Switch display background light on when we want to update the display
+  M5.Axp.SetLDO3(true);  // Switch TFT on 
+  M5.Lcd.fillScreen(WHITE);
   M5.Lcd.setRotation(1);
   M5.Lcd.setCursor(1, 10);
-  M5.Lcd.setTextColor(WHITE);
+  M5.Lcd.setTextColor(BLACK);
   M5.Lcd.setTextSize(6);
   M5.Lcd.print(near);
+  delay(5000); // leave display background light on for five seconds to show the current near value
+  M5.Axp.SetLDO2(false); // Switch display off again
+  M5.Axp.SetLDO3(false);  // Switch TFT off again 
+  }   // move the printing into the check if near has changed, only switch on display when near has changed
 }
  
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
@@ -104,6 +115,7 @@ M5.Lcd.setRotation(1);
   M5.Lcd.setTextColor(WHITE);
   M5.Lcd.setTextSize(2);
   M5.Lcd.printf("Covid App Counter");
+  pinMode(10, OUTPUT); // Set the GPIO for the Heartbeat LED to output mode
   
   //we have 10 slots, each stores the macs seen in a second. so we record the seen macs from the last 10 secods
   for (int i = 0; i < SLOTS; i++)
@@ -126,4 +138,9 @@ M5.Lcd.setRotation(1);
 void loop()
 {
   pBLEScan->start(scanTime);
+  
+  // Heartbeat via the red LED after each scan cycle so we see the device is still working even when the display is off
+  digitalWrite(M5_LED, LOW); // switch on the LED
+  delay (300);
+  digitalWrite(M5_LED, HIGH); // switch off the LED
 }
